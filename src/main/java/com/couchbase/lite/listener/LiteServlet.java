@@ -62,6 +62,16 @@ public class LiteServlet extends HttpServlet {
             conn.setSSLSession(sslSocket.getSession());
         }
 
+        // Deal with setting the principal
+        if (request.getUserPrincipal() != null) {
+            Log.e(Database.TAG, "The Servlet returned a principal, TJWS isn't set up to do that!" + request.getUserPrincipal());
+            throw new RuntimeException("TJWS returned a principal!" + request.getUserPrincipal());
+        }
+
+        if (conn.getSSLSession() != null) {
+            conn.setPrincipal(conn.getSSLSession().getPeerPrincipal());
+        }
+
         //set the method
         conn.setRequestMethod(request.getMethod());
 
