@@ -91,7 +91,6 @@ public class LiteServlet extends HttpServlet {
 
         final ServletOutputStream os = response.getOutputStream();
         response.setBufferSize(128);
-        Log.v(Database.TAG, String.format("Buffer size is %d", response.getBufferSize()));
 
         final CountDownLatch doneSignal = new CountDownLatch(1);
 

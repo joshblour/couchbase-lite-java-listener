@@ -23,6 +23,7 @@ public class LiteListener implements Runnable {
     /**
      * LiteListener constructor
      *
+     * @param manager the Manager instance
      * @param port the suggested port to use. If 0 is specified then the next available port will be picked.
      */
     public LiteListener(Manager manager, int port) {
