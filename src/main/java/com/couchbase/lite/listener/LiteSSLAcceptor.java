@@ -1,7 +1,7 @@
 package com.couchbase.lite.listener;
 
 import Acme.Serve.Serve;
-import android.util.Log;
+import com.couchbase.lite.util.Log;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -58,7 +58,7 @@ public class LiteSSLAcceptor extends Acme.Serve.SSLAcceptor implements LiteAccep
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                Log.e("LiteSSLAcceptor","getPort sleep somehow got interrupted", e);
+                Log.e("LiteSSLAcceptor", "getPort sleep somehow got interrupted", e);
                 throw new RuntimeException("getPort sleep somehow got interrupted", e);
             }
         }
