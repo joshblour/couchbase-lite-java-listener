@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 
 /**
  * Provides read only status on a socket.
+ * https://github.com/couchbase/couchbase-lite-java-listener/issues/25
  */
 public class SocketStatus {
     protected ServerSocket serverSocket;

@@ -2,8 +2,8 @@ package com.couchbase.lite.listener;
 
 import Acme.Serve.Serve;
 import com.couchbase.lite.Manager;
-import com.couchbase.lite.router.RequestAuthorization;
-import com.couchbase.lite.util.Log;
+import com.couchbase.lite.router.RequestAuthorization; // Help implement https://github.com/couchbase/couchbase-lite-java-core/issues/44
+import com.couchbase.lite.util.Log; // https://github.com/couchbase/couchbase-lite-java-listener/issues/25
 
 import java.util.Properties;
 
@@ -12,13 +12,16 @@ public class LiteServer extends Serve {
 
     public static final String CBLServer_KEY = "CBLServerInternal";
     public static final String CBL_URI_SCHEME = "cblite://";
-    public static final String Default_Acceptor = "com.couchbase.lite.listener.SimpleAcceptor";
+    public static final String Default_Acceptor = "com.couchbase.lite.listener.SimpleAcceptor"; // https://github.com/couchbase/couchbase-lite-java-listener/issues/29
 
     private Properties props;
     private Manager manager;
     private LiteListener listener;
-    private final RequestAuthorization requestAuthorization;
+    private final RequestAuthorization requestAuthorization; // https://github.com/couchbase/couchbase-lite-java-core/issues/44
 
+    // https://github.com/couchbase/couchbase-lite-java-listener/issues/30
+    // https://github.com/couchbase/couchbase-lite-java-listener/issues/24
+    // https://github.com/couchbase/couchbase-lite-java-core/issues/44
     /**
      * Creates an instance of LiteServer with the server, listener & TJWS properties.
      * @param manager
@@ -35,6 +38,7 @@ public class LiteServer extends Serve {
         }
     }
 
+    // https://github.com/couchbase/couchbase-lite-java-listener/issues/25
     public SocketStatus getSocketStatus() {
         // There are race conditions where the server is being initialized on one thread while a
         // caller is on another thread. In that case we can end up with acceptor being null because
@@ -61,7 +65,7 @@ public class LiteServer extends Serve {
         this.arguments = props;
 
         //pass in the CBLServerInternal to the servlet
-        LiteServlet servlet = new LiteServlet(manager, requestAuthorization);
+        LiteServlet servlet = new LiteServlet(manager, requestAuthorization); // https://github.com/couchbase/couchbase-lite-java-listener/issues/30
 
         this.addServlet("/", servlet);
         return super.serve();

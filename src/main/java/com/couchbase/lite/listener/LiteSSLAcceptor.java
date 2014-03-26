@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Map;
 
-/**
- * Created by yarong on 11/1/13.
- */
+// https://github.com/couchbase/couchbase-lite-java-listener/issues/28
 public class LiteSSLAcceptor extends Acme.Serve.SSLAcceptor implements LiteAcceptor {
 
     /**

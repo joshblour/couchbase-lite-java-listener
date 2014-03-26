@@ -47,6 +47,7 @@ import java.util.Map;
  * Take from SimpleAcceptor.java in TJWS which made its socket private but we needed it to create
  * an acceptor that implements SocketStatus so we copied the code in order to get a version that
  * lets us access the socket.
+ * https://github.com/couchbase/couchbase-lite-java-listener/issues/29
  */
 public class SimpleAcceptor implements LiteAcceptor, Serve.Acceptor {
     public Socket accept() throws IOException {

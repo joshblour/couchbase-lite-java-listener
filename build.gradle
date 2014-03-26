@@ -22,7 +22,7 @@ dependencies {
 
     compile buildListenerWithArtifacts == null ?
             project(':libraries:couchbase-lite-java-core') :
-            'com.couchbase.lite:java-core:' + System.getProperty("UPLOAD_VERSION_CBLITE")
+            'com.couchbase.lite:java-core:' + System.getProperty("UPLOAD_VERSION_CBLITE") // https://github.com/couchbase/couchbase-lite-java-listener/issues/18
 
 
 }
@@ -36,6 +36,7 @@ task createMavenDirectory(type: Exec) {
     commandLine "curl", "--user", uploadUser, "-X", "MKCOL", mkcolPath
 }
 
+// https://github.com/couchbase/couchbase-lite-java-listener/issues/18
 def mavenPath() {
     artifactory_local == "true" ?
             'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath :
@@ -57,7 +58,7 @@ uploadArchives {
                 authentication(userName: "${artifactory_user}", password: "${artifactory_password}")
             }
 
-            pom.version = System.properties['UPLOAD_VERSION_CBLITE']
+            pom.version = System.properties['UPLOAD_VERSION_CBLITE'] // https://github.com/couchbase/couchbase-lite-java-listener/issues/18
             //pom.version = System.getenv("UPLOAD_VERSION_CBLITE_LISTENER")
             pom.groupId = 'com.couchbase.lite'
             pom.artifactId = 'java-listener'
@@ -74,16 +75,11 @@ uploadArchives {
     }
 }
 
-task sourcesJar(type: Jar) {
+task sourcesJar(type: Jar) {  // https://github.com/couchbase/couchbase-lite-java-listener/issues/19
     classifier = 'sources'
     from sourceSets.main.java.srcDirs
 }
 
-artifacts {
+artifacts { // https://github.com/couchbase/couchbase-lite-java-listener/issues/19
     archives sourcesJar
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.10'
-}
-

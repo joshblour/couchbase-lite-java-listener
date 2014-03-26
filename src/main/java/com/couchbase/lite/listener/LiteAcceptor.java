@@ -1,8 +1,6 @@
 package com.couchbase.lite.listener;
 
-/**
- * Created by yarong on 11/15/13.
- */
+// https://github.com/couchbase/couchbase-lite-java-listener/issues/27
 public interface LiteAcceptor {
     public SocketStatus getSocketStatus();
 }

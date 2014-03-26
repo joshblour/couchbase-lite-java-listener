@@ -1,11 +1,11 @@
 package com.couchbase.lite.listener;
 
-import Acme.Serve.Serve;
+import Acme.Serve.Serve; // https://github.com/couchbase/couchbase-lite-java-listener/issues/24
 import com.couchbase.lite.Manager;
-import com.couchbase.lite.router.RequestAuthorization;
+import com.couchbase.lite.router.RequestAuthorization; // Needed for https://github.com/couchbase/couchbase-lite-java-core/issues/44
 import com.couchbase.lite.router.URLStreamHandlerFactory;
 
-import java.util.Properties;
+import java.util.Properties; // https://github.com/couchbase/couchbase-lite-java-listener/issues/24
 import java.util.concurrent.ScheduledExecutorService;
 
 public class LiteListener implements Runnable {
@@ -27,11 +27,14 @@ public class LiteListener implements Runnable {
      * @param port the suggested port to use. If 0 is specified then the next available port will be picked.
      */
     public LiteListener(Manager manager, int port) {
+        // Needed to support https://github.com/couchbase/couchbase-lite-java-listener/issues/24 and
+        // https://github.com/couchbase/couchbase-lite-java-core/issues/44
         this(manager, port, new Properties(), null);
     }
 
     /**
-     *
+     * Created to enable https://github.com/couchbase/couchbase-lite-java-listener/issues/24 and
+     * https://github.com/couchbase/couchbase-lite-java-core/issues/44
      * @param manager 
      * @param port the port to use.  If 0 is chosen then the next free port will be used, the port
 							chosen can be discovered via getSocketStatu()
@@ -41,15 +44,17 @@ public class LiteListener implements Runnable {
      */
     public LiteListener(Manager manager, int port, Properties tjwsProperties, RequestAuthorization requestAuthorization) {
         this.manager = manager;
-        tjwsProperties.put(Serve.ARG_PORT, port);
+        tjwsProperties.put(Serve.ARG_PORT, port); // https://github.com/couchbase/couchbase-lite-java-listener/issues/24
         this.httpServer = new LiteServer(manager, tjwsProperties, requestAuthorization);
     }
 
     @Override
     public void run() {
+        // Removed reference to this.serverStatus because of https://github.com/couchbase/couchbase-lite-java-listener/issues/23
         httpServer.serve();
     }
 
+    // https://github.com/couchbase/couchbase-lite-java-listener/issues/42
     public int start() {
         thread = new Thread(this);
         thread.start();
@@ -65,6 +70,7 @@ public class LiteListener implements Runnable {
         workExecutor.submit(r);
     }
 
+    // https://github.com/couchbase/couchbase-lite-java-listener/issues/25
     public SocketStatus getSocketStatus() {
         return this.httpServer.getSocketStatus();
     }

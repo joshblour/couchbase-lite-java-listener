@@ -29,17 +29,16 @@ public class LiteServlet extends HttpServlet {
     private Manager manager;
     private LiteListener listener;
     public static final String TAG = "LiteServlet";
-    private final RequestAuthorization requestAuthorization;
+    private final RequestAuthorization requestAuthorization; // Needed for https://github.com/couchbase/couchbase-lite-java-core/issues/44
 
     /**
-     *
+     * https://github.com/couchbase/couchbase-lite-java-core/issues/44
      * @param manager
      * @param requestAuthorization This can be null if no authorize check is being used
      */
     public LiteServlet(Manager manager, RequestAuthorization requestAuthorization) {
-        super();
         this.manager = manager;
-        this.requestAuthorization = requestAuthorization;
+        this.requestAuthorization = requestAuthorization;  // https://github.com/couchbase/couchbase-lite-java-core/issues/44
     }
 
     @Override
@@ -55,7 +54,8 @@ public class LiteServlet extends HttpServlet {
         final URLConnection conn = (URLConnection)url.openConnection();
         conn.setDoOutput(true);
 
-        //find SSL session, if any
+        // Start section for https://github.com/couchbase/couchbase-lite-java-core/issues/39
+        //find SSL session
         Serve.ServeConnection serveConnection = (Serve.ServeConnection)request; // This only works for TJWS
         if (serveConnection.getSocket() instanceof SSLSocket) {
             SSLSocket sslSocket = (SSLSocket) serveConnection.getSocket();
@@ -71,6 +71,7 @@ public class LiteServlet extends HttpServlet {
         if (conn.getSSLSession() != null) {
             conn.setPrincipal(conn.getSSLSession().getPeerPrincipal());
         }
+        // End section for - needed for https://github.com/couchbase/couchbase-lite-java-core/issues/39
 
         //set the method
         conn.setRequestMethod(request.getMethod());
@@ -94,7 +95,7 @@ public class LiteServlet extends HttpServlet {
 
         final CountDownLatch doneSignal = new CountDownLatch(1);
 
-        final Router router = new Router(manager, conn, requestAuthorization);
+        final Router router = new Router(manager, conn, requestAuthorization);  // Needed for https://github.com/couchbase/couchbase-lite-java-core/issues/44
 
         RouterCallbackBlock callbackBlock = new RouterCallbackBlock() {
 
