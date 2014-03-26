@@ -26,6 +26,7 @@ public class LiteServer extends Serve {
      * @param requestAuthorization This can be null if no special authorization policy is to be used.
      */
     public LiteServer(Manager manager, Properties tjwsProperties, RequestAuthorization requestAuthorization) {
+        super(tjwsProperties, System.err); // https://github.com/couchbase/couchbase-lite-java-listener/issues/24
         this.manager = manager;
         props = tjwsProperties;
         this.requestAuthorization = requestAuthorization;
