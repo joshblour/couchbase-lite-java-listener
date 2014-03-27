@@ -24,7 +24,7 @@ public class LiteListener implements Runnable {
      * LiteListener constructor
      *
      * @param manager the Manager instance
-     * @param port the suggested port to use. If 0 is specified then the next available port will be picked.
+     * @param port the suggested port to use. If 0 is specified then the next available port will be picked. // https://github.com/couchbase/couchbase-lite-java-listener/issues/26
      */
     public LiteListener(Manager manager, int port) {
         // Needed to support https://github.com/couchbase/couchbase-lite-java-listener/issues/24 and
@@ -37,14 +37,14 @@ public class LiteListener implements Runnable {
      * https://github.com/couchbase/couchbase-lite-java-core/issues/44
      * @param manager 
      * @param port the port to use.  If 0 is chosen then the next free port will be used, the port
-							chosen can be discovered via getSocketStatu()
+							chosen can be discovered via getSocketStatus() - https://github.com/couchbase/couchbase-lite-java-listener/issues/26
      * @param tjwsProperties    properties to be passed into the TJWS server instance. Note that if
      *                          port is set in these properties they will be overwritten by suggestedPort
      * @param requestAuthorization Specifies the authorization policy, can be NULL
      */
     public LiteListener(Manager manager, int port, Properties tjwsProperties, RequestAuthorization requestAuthorization) {
         this.manager = manager;
-        tjwsProperties.put(Serve.ARG_PORT, port); // https://github.com/couchbase/couchbase-lite-java-listener/issues/24
+        tjwsProperties.put(Serve.ARG_PORT, port); // https://github.com/couchbase/couchbase-lite-java-listener/issues/24  & https://github.com/couchbase/couchbase-lite-java-listener/issues/26
         this.httpServer = new LiteServer(manager, tjwsProperties, requestAuthorization);
     }
 
