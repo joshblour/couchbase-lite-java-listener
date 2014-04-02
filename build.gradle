@@ -3,6 +3,8 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'eclipse'
 
+sourceCompatibility = '1.6' // https://github.com/couchbase/couchbase-lite-java-listener/issues/44
+
 repositories {
     mavenLocal()
     maven { url "http://thaliartifactory.cloudapp.net/artifactory/libs-snapshot" }
