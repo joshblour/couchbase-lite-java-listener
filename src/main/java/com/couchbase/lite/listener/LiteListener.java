@@ -25,11 +25,13 @@ public class LiteListener implements Runnable {
      *
      * @param manager the Manager instance
      * @param port the suggested port to use. If 0 is specified then the next available port will be picked. // https://github.com/couchbase/couchbase-lite-java-listener/issues/26
+     * @param allowedCredentials any clients connecting to this liteserv must present these
+     *                           credentials.
      */
-    public LiteListener(Manager manager, int port) {
+    public LiteListener(Manager manager, int port, Credentials allowedCredentials) {
         // Needed to support https://github.com/couchbase/couchbase-lite-java-listener/issues/24 and
         // https://github.com/couchbase/couchbase-lite-java-core/issues/44
-        this(manager, port, new Properties(), null);
+        this(manager, port, new Properties(), null, allowedCredentials);
     }
 
     /**
@@ -41,11 +43,17 @@ public class LiteListener implements Runnable {
      * @param tjwsProperties    properties to be passed into the TJWS server instance. Note that if
      *                          port is set in these properties they will be overwritten by suggestedPort
      * @param requestAuthorization Specifies the authorization policy, can be NULL
+     * @param allowedCredentials any clients connecting to this liteserv must present these
+     *                           credentials.
      */
-    public LiteListener(Manager manager, int port, Properties tjwsProperties, RequestAuthorization requestAuthorization) {
+    public LiteListener(Manager manager, int port, Properties tjwsProperties, RequestAuthorization requestAuthorization, Credentials allowedCredentials) {
+		if (requestAuthorization != null && allowedCredentials != null) {
+			throw new RuntimeException("we haven't harmonized requestAuthorization and allowedCredentials so pick one or the other or neither but not both.");
+		}
         this.manager = manager;
         tjwsProperties.put(Serve.ARG_PORT, port); // https://github.com/couchbase/couchbase-lite-java-listener/issues/24  & https://github.com/couchbase/couchbase-lite-java-listener/issues/26
         this.httpServer = new LiteServer(manager, tjwsProperties, requestAuthorization);
+        this.httpServer.setAllowedCredentials(allowedCredentials);
     }
 
     @Override
@@ -74,4 +82,5 @@ public class LiteListener implements Runnable {
     public SocketStatus getSocketStatus() {
         return this.httpServer.getSocketStatus();
     }
+
 }

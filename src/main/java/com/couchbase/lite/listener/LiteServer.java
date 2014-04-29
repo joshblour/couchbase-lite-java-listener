@@ -19,6 +19,12 @@ public class LiteServer extends Serve {
     private LiteListener listener;
     private final RequestAuthorization requestAuthorization; // https://github.com/couchbase/couchbase-lite-java-core/issues/44
 
+    // if this is non-null, then users must present BasicAuth
+    // credential in every request which matches up with allowedCredentials,
+    // or else the request will be refused.
+    // REF: https://github.com/couchbase/couchbase-lite-java-listener/issues/35
+    private Credentials allowedCredentials;
+
     // https://github.com/couchbase/couchbase-lite-java-listener/issues/30
     // https://github.com/couchbase/couchbase-lite-java-listener/issues/24
     // https://github.com/couchbase/couchbase-lite-java-core/issues/44
@@ -59,6 +65,10 @@ public class LiteServer extends Serve {
         throw new RuntimeException("getSocketStatus is only supported on TJWS acceptors that support the SocketStatus interface.");
     }
 
+    public void setAllowedCredentials(Credentials allowedCredentials) {
+        this.allowedCredentials = allowedCredentials;
+    }
+
     @Override
     public int serve() {
         //pass our custom properties in
@@ -66,7 +76,9 @@ public class LiteServer extends Serve {
 
         //pass in the CBLServerInternal to the servlet
         LiteServlet servlet = new LiteServlet(manager, requestAuthorization); // https://github.com/couchbase/couchbase-lite-java-listener/issues/30
-
+        if (allowedCredentials != null) {
+            servlet.setAllowedCredentials(allowedCredentials);
+        }
         this.addServlet("/", servlet);
         return super.serve();
     }
