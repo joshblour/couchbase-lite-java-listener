@@ -1,1 +1,0 @@
-include ':couchbase-lite-java-listener', ':libraries:couchbase-lite-java-core'
