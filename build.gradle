@@ -38,11 +38,6 @@ task createMavenDirectory(type: Exec) {
     commandLine "curl", "--user", uploadUser, "-X", "MKCOL", mkcolPath
 }
 
-// https://github.com/couchbase/couchbase-lite-java-listener/issues/18
-def mavenPath() {
-    artifactory_local == "true" ?
-            'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath :
-            artifactory_contextUrl + "/libs-release-local"}
 // this hack is only needed for apache mod_dav based Maven repo's like file.couchbase.com.  otherwise, skip it
 createMavenDirectory.onlyIf { System.getenv("MAVEN_UPLOAD_REPO_URL").contains("files") }
 
@@ -53,10 +48,8 @@ task uploadArchivesWrapper(dependsOn: createMavenDirectory) << {
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: mavenPath()) { // https://github.com/couchbase/couchbase-lite-java-listener/issues/18
-                authentication(userName: "${artifactory_user}", password: "${artifactory_password}")
-            //repository(url: System.getenv("MAVEN_UPLOAD_REPO_URL")) {
-            //    authentication(userName: System.getenv("MAVEN_UPLOAD_USERNAME"), password: System.getenv("MAVEN_UPLOAD_PASSWORD"))
+            repository(url: System.getProperty('MAVEN_UPLOAD_REPO_URL')) {
+				authentication(userName: System.getProperty('MAVEN_UPLOAD_USERNAME'), password: System.getProperty('MAVEN_UPLOAD_PASSWORD'))
             }
             
             pom.version = System.properties["MAVEN_UPLOAD_VERSION"] // https://github.com/couchbase/couchbase-lite-java-listener/issues/18
