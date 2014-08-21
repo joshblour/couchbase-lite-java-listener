@@ -1,9 +1,12 @@
-
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'eclipse'
 
 sourceCompatibility = '1.6'
+
+version = System.properties["MAVEN_UPLOAD_VERSION"] // https://github.com/couchbase/couchbase-lite-java-listener/issues/18
+group = 'com.couchbase.lite'
+archivesBaseName = 'couchbase-lite-java-listener'
 
 repositories {
     mavenLocal()
@@ -52,10 +55,6 @@ uploadArchives {
 				authentication(userName: System.getProperty('MAVEN_UPLOAD_USERNAME'), password: System.getProperty('MAVEN_UPLOAD_PASSWORD'))
             }
             
-            pom.version = System.properties["MAVEN_UPLOAD_VERSION"] // https://github.com/couchbase/couchbase-lite-java-listener/issues/18
-            //pom.version = System.getenv("MAVEN_UPLOAD_VERSION")  
-            pom.groupId = 'com.couchbase.lite'
-            pom.artifactId = 'couchbase-lite-java-listener'
             pom.project {
                 licenses {
                     license {
