@@ -68,11 +68,11 @@ uploadArchives {
     }
 }
 
-task sourcesJar(type: Jar) {  // https://github.com/couchbase/couchbase-lite-java-listener/issues/19
+task sourcesJar(type: Jar) { 
     classifier = 'sources'
     from sourceSets.main.java.srcDirs
 }
 
-artifacts { // https://github.com/couchbase/couchbase-lite-java-listener/issues/19
+artifacts { 
     archives sourcesJar
 }
