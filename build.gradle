@@ -19,11 +19,7 @@ dependencies {
 
     compile 'com.couchbase.cblite:servlet:2-3'
     compile 'com.couchbase.cblite:webserver:2-3'
-
-    compile buildListenerWithArtifacts == null ?
-            project(':libraries:couchbase-lite-java-core') :
-            'com.couchbase.lite:couchbase-lite-java-core:' + System.getenv("MAVEN_UPLOAD_VERSION")
-
+    compile 'com.couchbase.lite:couchbase-lite-java-core:1.1.0-536'
 
 }
 

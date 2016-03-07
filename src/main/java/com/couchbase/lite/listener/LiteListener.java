@@ -87,6 +87,7 @@ public class LiteListener implements Runnable {
 
     public void stop() {
         httpServer.notifyStop();
+        httpServer.destroyAllServlets();
     }
 
     public void onServerThread(Runnable r) {
