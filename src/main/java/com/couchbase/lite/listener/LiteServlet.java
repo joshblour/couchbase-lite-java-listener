@@ -1,6 +1,5 @@
 package com.couchbase.lite.listener;
 
-import com.couchbase.lite.Database;
 import com.couchbase.lite.Manager;
 import com.couchbase.lite.router.Router;
 import com.couchbase.lite.router.RouterCallbackBlock;
@@ -10,7 +9,7 @@ import com.couchbase.lite.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
@@ -101,35 +100,37 @@ public class LiteServlet extends HttpServlet {
         final Router router = new Router(manager, conn);
 
         RouterCallbackBlock callbackBlock = new RouterCallbackBlock() {
-
             @Override
             public void onResponseReady() {
+                Log.v(Log.TAG_LISTENER, "RouterCallbackBlock.onResponseReady() START");
                 //set the response code
                 response.setStatus(conn.getResponseCode());
-
                 //add the resonse headers
                 Map<String, List<String>> headers = conn.getHeaderFields();
-                if(headers != null) {
+                if (headers != null) {
                     for (String headerName : headers.keySet()) {
                         for (String headerValue : headers.get(headerName)) {
                             response.addHeader(headerName, headerValue);
                         }
                     }
                 }
-
                 doneSignal.countDown();
+                Log.v(Log.TAG_LISTENER, "RouterCallbackBlock.onResponseReady() END");
             }
-
         };
 
         router.setCallbackBlock(callbackBlock);
 
-        synchronized (manager) {
-            router.start();
-        }
+        // set remote URL as source
+        router.setSource(remoteURL(request));
+
+        router.start();
 
         try {
+            Log.v(Log.TAG_LISTENER, "CountDownLatch.await() START");
             doneSignal.await();
+            Log.v(Log.TAG_LISTENER, "CountDownLatch.await() END");
+
             InputStream responseInputStream = conn.getResponseInputStream();
             final byte[] buffer = new byte[65536];
             int r;
@@ -142,11 +143,10 @@ public class LiteServlet extends HttpServlet {
         } catch (InterruptedException e) {
             Log.e(Log.TAG_LISTENER, "Interrupted waiting for result", e);
         } finally {
-            if(router != null) {
+            if (router != null) {
                 router.stop();
             }
         }
-
     }
 
     public Credentials credentialsWithBasicAuthentication(HttpServletRequest req) {
@@ -156,7 +156,7 @@ public class LiteServlet extends HttpServlet {
                 StringTokenizer st = new StringTokenizer(authHeader);
                 if (st.hasMoreTokens()) {
                     String basic = st.nextToken();
-                        if (basic.equalsIgnoreCase("Basic")) {
+                    if (basic.equalsIgnoreCase("Basic")) {
                         try {
                             String credentials = new String(Base64.decode(st.nextToken()), "UTF-8");
                             Log.v(Log.TAG_LISTENER, "Credentials: ", credentials);
@@ -180,9 +180,31 @@ public class LiteServlet extends HttpServlet {
         } catch (Exception e) {
             Log.e(Log.TAG_LISTENER, "Exception getting basic auth credentials", e);
         }
-
         return null;
     }
 
+    private URL remoteURL(HttpServletRequest req) {
+        String addr = req.getRemoteAddr();
+        Log.v(Log.TAG_LISTENER, "remoteURL() addr=" + addr);
+        if (!"127.0.0.1".equals(addr) && !"::1".equals(addr)) {
+            // IPv6
+            if (addr.indexOf(':') >= 0)
+                addr = String.format("[%s]", addr);
 
+            String username = allowedCredentials != null ? allowedCredentials.getLogin() : null;
+            String protocol = req.isSecure() ? "https" : "http";
+            String spec = null;
+            if(username != null && username.length() > 0)
+                spec = String.format("%s://%s@%s/", protocol, username, addr);
+            else
+                spec = String.format("%s://%s/", protocol, addr);
+            try {
+                return new URL(spec);
+            } catch (MalformedURLException e) {
+                Log.w(Log.TAG_LISTENER, "failed to create remote URL", e);
+                return null;
+            }
+        }
+        return null;
+    }
 }
